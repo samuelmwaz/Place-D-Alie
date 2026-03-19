@@ -358,6 +358,8 @@
     </style>
 </head>
 <body>
+    <a href="registerd.html " class="admin"> reg  qrcode</a>
+      <a href=" admin.html" class="admin"> adm log</a>
 
     <section class="hero">
         <h1>Place D'Alie Specials</h1>
@@ -418,7 +420,7 @@
             const pin = prompt("Enter PIN:");
             if(pin === '1234') {
                 sessionStorage.setItem('isManager', 'true');
-                window.location.href = "admin.html";
+                window.location.href = "admin.html"
             } else if(pin !== null) {
                 alert("Incorrect PIN");
             }
