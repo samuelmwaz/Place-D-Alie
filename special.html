@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Place D'Alie — Exclusive Specials</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #C0392B; --orange: #E8610A; --gold: #D4AF37; --dark: #111; --cream: #FFF8F0; }
+        body { font-family: 'Nunito', sans-serif; background: var(--cream); margin:0; padding-bottom: 50px; }
+        
+        /* PULSING GLOW FOR FLASH DEALS */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px var(--gold); }
+            50% { box-shadow: 0 0 25px var(--gold); border: 2px solid var(--gold); }
+            100% { box-shadow: 0 0 5px var(--gold); }
+        }
+        .flash-active { animation: pulseGlow 2s infinite; }
+
+        .hero { background: var(--dark); color: white; padding: 60px 20px; text-align: center; border-bottom: 5px solid var(--red); }
+        .hero h1 { font-family: 'Bebas Neue'; font-size: 4rem; margin:0; }
+        
+        .specials-grid { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; padding: 20px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); position: relative; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
+        
+        .timer-badge { position: absolute; top: 10px; left: 10px; background: var(--red); color: white; padding: 5px 12px; border-radius: 5px; font-weight: 900; font-size: 0.9rem; z-index: 10; }
+        
+        .card-body { padding: 25px; }
+        .price-row { display: flex; align-items: baseline; gap: 10px; margin: 15px 0; }
+        .old-price { text-decoration: line-through; color: #999; font-size: 1.2rem; }
+        .new-price { color: var(--red); font-size: 2.2rem; font-weight: 900; }
+        
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-claim { flex: 2; background: var(--red); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-wa { flex: 1; background: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        
+        .staff-link { position: fixed; bottom: 20px; right: 20px; background: var(--dark); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 0.8rem; opacity: 0.6; }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h1>Place D'Alie Specials</h1>
+    </section>
+
+    <div class="specials-grid" id="display"></div>
+    <button class="staff-link" onclick="adminLogin()">Manager Login</button>
+
+    <script>
+        function adminLogin() {
+            if(prompt("Enter PIN:") === "1234") {
+                sessionStorage.setItem('isManager', 'true');
+                window.location.href = "admin.html";
+            }
+        }
+
+        // Track Page View
+        localStorage.setItem('dalie_views', (parseInt(localStorage.getItem('dalie_views')) || 0) + 1);
+
+        function trackClick() {
+            localStorage.setItem('dalie_clicks', (parseInt(localStorage.getItem('dalie_clicks')) || 0) + 1);
+            alert("Special Claimed! Show this screen to our staff.");
+        }
+
+        function shareWA(title, price) {
+            const text = encodeURIComponent(`Check out this deal at Place D'Alie: ${title} for only K${price}! 🔥`);
+            window.open(`https://wa.me/?text=${text}`);
+        }
+
+        function updateTimers() {
+            const data = JSON.parse(localStorage.getItem('dalie_promos')) || [];
+            const container = document.getElementById('display');
+            
+            container.innerHTML = data.map(p => {
+                // Determine if deal is "Flash"
+                const isFlash = p.flash ? 'flash-active' : '';
+                
+                return `
+                    <div class="card ${isFlash}">
+                        <div class="timer-badge">⏳ LIMITED OFFER</div>
+                        <img src="${p.image || 'https://via.placeholder.com/400x220'}">
+                        <div class="card-body">
+                            <h2 style="font-family:'Bebas Neue'; margin:0; font-size:2rem;">${p.title}</h2>
+                            <p style="color:#666; margin:10px 0;">${p.desc}</p>
+                            <div class="price-row">
+                                <span class="old-price">K${p.oldPrice}</span>
+                                <span class="new-price">K${p.newPrice}</span>
+                            </div>
+                            <div class="btn-row">
+                                <button class="btn-claim" onclick="trackClick()">CLAIM DEAL</button>
+                                <button class="btn-wa" onclick="shareWA('${p.title}', '${p.newPrice}')">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="20">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        updateTimers();
+    </script>
+</body>
+</html>
