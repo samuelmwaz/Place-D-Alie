@@ -16,7 +16,6 @@
             padding-bottom: 80px;
         }
 
-        /* FLASH GLOW */
         @keyframes pulseGlow {
             0%   { box-shadow: 0 0 5px var(--gold); }
             50%  { box-shadow: 0 0 25px var(--gold); border-color: var(--gold); }
@@ -24,7 +23,6 @@
         }
         .flash-active { animation: pulseGlow 2s infinite; border: 2px solid transparent; }
 
-        /* HERO */
         .hero {
             background: var(--dark);
             color: white;
@@ -46,7 +44,6 @@
             letter-spacing: 1px;
         }
 
-        /* EMPTY STATE */
         .empty-state {
             text-align: center;
             padding: 60px 30px;
@@ -55,7 +52,6 @@
         .empty-state span { font-size: 3rem; display: block; margin-bottom: 12px; }
         .empty-state p { font-size: 0.9rem; }
 
-        /* GRID — single column on mobile, wider on tablet+ */
         .specials-grid {
             padding: 14px;
             display: grid;
@@ -68,7 +64,6 @@
             .specials-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        /* CARD */
         .card {
             background: white;
             border-radius: 16px;
@@ -87,7 +82,6 @@
             display: block;
         }
 
-        /* BADGE */
         .timer-badge {
             position: absolute;
             top: 10px;
@@ -114,7 +108,6 @@
             z-index: 10;
         }
 
-        /* CARD BODY */
         .card-body { padding: 14px 16px 16px; }
 
         .card-body h2 {
@@ -150,7 +143,6 @@
             line-height: 1;
         }
 
-        /* SAVINGS PILL */
         .savings {
             background: #fff0f0;
             color: var(--red);
@@ -161,7 +153,6 @@
             align-self: center;
         }
 
-        /* BUTTONS */
         .btn-row {
             display: flex;
             gap: 8px;
@@ -195,7 +186,7 @@
         }
         .btn-wa:active { opacity: 0.85; }
 
-        /* CLAIM MODAL */
+        /* ── ORDER MODAL ── */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -209,20 +200,134 @@
         .modal {
             background: white;
             border-radius: 20px 20px 0 0;
-            padding: 30px 24px 40px;
+            padding: 28px 22px 40px;
             width: 100%;
             max-width: 500px;
-            text-align: center;
             animation: slideUp 0.25s ease;
         }
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to   { transform: translateY(0); }
         }
-        .modal-icon { font-size: 3rem; margin-bottom: 10px; }
-        .modal h3 { font-family: 'Bebas Neue'; font-size: 2rem; color: var(--dark); }
-        .modal p { color: #666; font-size: 0.9rem; margin: 8px 0 20px; line-height: 1.5; }
-        .modal-close {
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .modal-header h3 {
+            font-family: 'Bebas Neue';
+            font-size: 1.8rem;
+            color: var(--dark);
+            letter-spacing: 0.5px;
+        }
+        .modal-close-x {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-deal-tag {
+            background: #fff0f0;
+            color: var(--red);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 18px;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            color: var(--dark);
+            background: #fafafa;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .form-group input:focus { border-color: var(--red); background: white; }
+
+        /* Fulfillment toggle */
+        .fulfil-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .fulfil-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            font-family: 'Bebas Neue';
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .fulfil-btn.selected {
+            border-color: var(--red);
+            color: var(--red);
+            background: #fff0f0;
+        }
+
+        .submit-order-btn {
+            width: 100%;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: 'Bebas Neue';
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .submit-order-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+        /* ── SUCCESS MODAL ── */
+        .success-modal {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 36px 24px 44px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            animation: slideUp 0.25s ease;
+        }
+        .success-icon { font-size: 3.5rem; margin-bottom: 10px; }
+        .success-modal h3 {
+            font-family: 'Bebas Neue';
+            font-size: 2.1rem;
+            color: var(--dark);
+        }
+        .success-modal p { color: #666; font-size: 0.9rem; margin: 8px 0 22px; line-height: 1.5; }
+        .modal-close-btn {
             width: 100%;
             background: var(--dark);
             color: white;
@@ -261,21 +366,53 @@
 
     <div class="specials-grid" id="display"></div>
 
-    <!-- CLAIM MODAL -->
-    <div class="modal-overlay" id="claimModal" onclick="closeModal(event)">
+    <!-- ORDER MODAL -->
+    <div class="modal-overlay" id="orderModal">
         <div class="modal">
-            <div class="modal-icon">🎉</div>
-            <h3>Deal Claimed!</h3>
-            <p>Show this screen to our staff to redeem your special. Valid today only.</p>
-            <button class="modal-close" onclick="document.getElementById('claimModal').classList.remove('open')">Got It</button>
+            <div class="modal-header">
+                <h3>Claim Your Deal</h3>
+                <button class="modal-close-x" onclick="closeOrderModal()">✕</button>
+            </div>
+            <div class="modal-deal-tag" id="modalDealTag">🔥 Loading...</div>
+
+            <div class="form-group">
+                <label>Your Name</label>
+                <input type="text" id="custName" placeholder="e.g. Chanda Mwale" autocomplete="name">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp / Phone Number</label>
+                <input type="tel" id="custPhone" placeholder="e.g. 0977 123 456" autocomplete="tel" inputmode="tel">
+            </div>
+
+            <div class="form-group">
+                <label>How will you get it?</label>
+            </div>
+            <div class="fulfil-row">
+                <button class="fulfil-btn selected" id="btn-dinein" onclick="selectFulfil('dine-in')">🍽️ Dine-In / Pickup</button>
+                <button class="fulfil-btn" id="btn-delivery" onclick="selectFulfil('delivery')">🛵 Delivery</button>
+            </div>
+
+            <button class="submit-order-btn" onclick="submitOrder()">📩 SEND ORDER</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-modal">
+            <div class="success-icon">🎉</div>
+            <h3>Order Received!</h3>
+            <p>Our team has been notified. We'll confirm your order shortly.<br>Show this screen to our staff when you arrive.</p>
+            <button class="modal-close-btn" onclick="document.getElementById('successModal').classList.remove('open')">Got It — Thanks!</button>
         </div>
     </div>
 
     <button class="staff-link" onclick="adminLogin()">Manager Login</button>
 
     <script>
-        // Track view
         localStorage.setItem('dalie_views', (parseInt(localStorage.getItem('dalie_views')) || 0) + 1);
+
+        let currentDeal = null;
+        let fulfillment = 'dine-in';
 
         function adminLogin() {
             const pin = prompt("Enter PIN:");
@@ -287,14 +424,59 @@
             }
         }
 
-        function trackClick() {
-            localStorage.setItem('dalie_clicks', (parseInt(localStorage.getItem('dalie_clicks')) || 0) + 1);
-            document.getElementById('claimModal').classList.add('open');
+        function selectFulfil(type) {
+            fulfillment = type;
+            document.getElementById('btn-dinein').classList.toggle('selected', type === 'dine-in');
+            document.getElementById('btn-delivery').classList.toggle('selected', type === 'delivery');
         }
 
-        function closeModal(e) {
-            if(e.target === document.getElementById('claimModal'))
-                document.getElementById('claimModal').classList.remove('open');
+        function openOrderModal(promo) {
+            currentDeal = promo;
+            fulfillment = 'dine-in';
+            document.getElementById('btn-dinein').classList.add('selected');
+            document.getElementById('btn-delivery').classList.remove('selected');
+            document.getElementById('custName').value = '';
+            document.getElementById('custPhone').value = '';
+            document.getElementById('modalDealTag').textContent = '🔥 ' + promo.title + ' — K' + promo.newPrice;
+            document.getElementById('orderModal').classList.add('open');
+            setTimeout(() => document.getElementById('custName').focus(), 350);
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('open');
+        }
+
+        function submitOrder() {
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+
+            if(!name) { alert("Please enter your name."); return; }
+            if(!phone) { alert("Please enter your phone number."); return; }
+            if(!currentDeal) return;
+
+            // Track clicks
+            localStorage.setItem('dalie_clicks', (parseInt(localStorage.getItem('dalie_clicks')) || 0) + 1);
+
+            // Save order
+            const orders = JSON.parse(localStorage.getItem('dalie_orders')) || [];
+            orders.unshift({
+                id: Date.now(),
+                name,
+                phone,
+                fulfillment,
+                dealTitle: currentDeal.title,
+                dealPrice: currentDeal.newPrice,
+                dealImage: currentDeal.image,
+                timestamp: new Date().toISOString(),
+                status: 'new'
+            });
+            localStorage.setItem('dalie_orders', JSON.stringify(orders));
+
+            // Close order modal, open success
+            document.getElementById('orderModal').classList.remove('open');
+            setTimeout(() => {
+                document.getElementById('successModal').classList.add('open');
+            }, 200);
         }
 
         function shareWA(title, price) {
@@ -315,7 +497,7 @@
                 return;
             }
 
-            container.innerHTML = data.map(p => {
+            container.innerHTML = data.map((p, i) => {
                 const savings = p.oldPrice && p.newPrice
                     ? Math.round(((p.oldPrice - p.newPrice) / p.oldPrice) * 100)
                     : null;
@@ -334,7 +516,7 @@
                                 ${savings ? `<span class="savings">-${savings}%</span>` : ''}
                             </div>
                             <div class="btn-row">
-                                <button class="btn-claim" onclick="trackClick()">CLAIM DEAL</button>
+                                <button class="btn-claim" onclick='openOrderModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>CLAIM DEAL</button>
                                 <button class="btn-wa" onclick="shareWA('${p.title.replace(/'/g,"\\'")}', '${p.newPrice}')" title="Share on WhatsApp">
                                     <svg width="20" height="20" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M16 2C8.268 2 2 8.268 2 16c0 2.484.676 4.813 1.854 6.813L2 30l7.387-1.854A13.924 13.924 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm7.07 19.536c-.293.826-1.723 1.58-2.352 1.676-.602.09-1.365.128-2.203-.138a20.26 20.26 0 01-1.994-.738C13.08 21.1 10.7 18.282 10.5 18.02c-.196-.26-1.62-2.154-1.62-4.113 0-1.958 1.026-2.92 1.39-3.314.364-.393.793-.49 1.058-.49.264 0 .528.002.76.014.244.012.57-.093.892.68.33.79 1.12 2.732 1.217 2.93.098.196.163.424.033.682-.13.26-.196.42-.392.648-.196.228-.413.51-.59.684-.196.196-.4.407-.172.797.228.39.013 2.03 2.258 3.295.82.478 1.464.625 1.77.696.306.07.484.058.663-.036.18-.096.773-.903.98-1.21.207-.308.412-.256.693-.154.282.104 1.787.843 2.094.997.306.153.51.228.586.356.077.13.077.75-.217 1.575z"/>
