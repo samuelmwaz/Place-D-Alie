@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Register — Place D'Alie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --red: #E8341A;
+            --red-dim: rgba(232,52,26,0.13);
+            --gold: #F0B429;
+            --gold-dim: rgba(240,180,41,0.13);
+            --green: #22C55E;
+            --green-dim: rgba(34,197,94,0.12);
+            --bg: #0C0C0E;
+            --surface: #161618;
+            --surface2: #1E1E22;
+            --border: rgba(255,255,255,0.08);
+            --text: #F0F0F2;
+            --muted: #6B6B75;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 20px 60px;
+        }
+
+        /* ── SCREENS ── */
+        .screen { display: none; width: 100%; max-width: 420px; flex-direction: column; align-items: center; }
+        .screen.on { display: flex; }
+
+        /* ── VERIFIED SCREEN (QR scan check) ── */
+        .verified-wrap { text-align: center; }
+        .verified-icon { font-size: 4rem; margin-bottom: 16px; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+        .verified-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 8px; }
+        .verified-name { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        .verified-sub { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 28px; }
+        .verified-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .v-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--green-dim); border: 2px solid rgba(34,197,94,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--green); flex-shrink: 0; text-transform: uppercase; }
+        .v-info { text-align: left; }
+        .v-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem; }
+        .v-phone { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+        /* ── FORM SCREEN ── */
+        .brand { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--muted); margin-bottom: 36px; }
+        .brand em { color: var(--gold); font-style: normal; }
+
+        .welcome-icon { font-size: 3.6rem; margin-bottom: 16px; animation: pop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes pop { from{transform:scale(0.3);opacity:0} to{transform:scale(1);opacity:1} }
+
+        .form-title { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; text-align: center; line-height: 1.15; margin-bottom: 8px; }
+        .form-sub { font-size: 0.86rem; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 32px; max-width: 290px; }
+
+        .form-card { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 26px 22px 28px; }
+
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-size: 0.67rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.9px; color: var(--muted); margin-bottom: 7px; }
+        .field input {
+            width: 100%; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 12px;
+            padding: 14px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 1rem;
+            outline: none; transition: border 0.2s, background 0.2s;
+        }
+        .field input:focus { border-color: var(--gold); background: #1a1a1e; }
+        .field input.err { border-color: var(--red) !important; animation: shk 0.35s ease; }
+        @keyframes shk { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+
+        .reg-btn {
+            width: 100%; background: var(--red); color: white; border: none;
+            padding: 16px; border-radius: 13px;
+            font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800;
+            letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;
+            margin-top: 6px; transition: all 0.15s;
+        }
+        .reg-btn:active { opacity: 0.84; transform: scale(0.98); }
+        .reg-btn:disabled { opacity: 0.6; pointer-events: none; }
+
+        .privacy { font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 14px; line-height: 1.5; }
+        .privacy em { color: var(--green); font-style: normal; }
+
+        /* ── MEMBER CARD SCREEN ── */
+        .member-card {
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 28px 24px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 24px 60px rgba(0,0,0,0.5);
+        }
+        .member-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, var(--red), var(--gold));
+        }
+        .mc-brand { font-family: 'Syne', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #bbb; margin-bottom: 4px; }
+        .mc-brand em { color: var(--red); font-style: normal; }
+        .mc-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #aaa; margin-bottom: 12px; }
+        .mc-name { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: #111; line-height: 1.1; margin-bottom: 4px; text-transform: uppercase; }
+        .mc-phone { font-size: 0.82rem; color: #888; margin-bottom: 20px; }
+        .mc-qr { display: flex; justify-content: center; margin-bottom: 16px; }
+        .mc-qr-inner { background: white; padding: 10px; border-radius: 12px; border: 2px solid #f0f0f0; display: inline-block; }
+        .mc-footer { font-size: 0.68rem; color: #bbb; }
+
+        .save-hint { font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 16px; line-height: 1.5; }
+        .save-hint em { color: var(--gold); font-style: normal; }
+
+        .back-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 12px 24px; border-radius: 10px; font-family: 'DM Sans'; font-size: 0.82rem; font-weight: 600; cursor: pointer; margin-top: 16px; transition: 0.2s; width: 100%; }
+        .back-btn:active { border-color: var(--gold); color: var(--gold); }
+
+        .specials-btn { width: 100%; background: var(--gold); color: #000; border: none; padding: 14px; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 800; letter-spacing: 0.4px; cursor: pointer; margin-top: 10px; transition: all 0.15s; text-align: center; text-decoration: none; display: block; }
+        .specials-btn:active { opacity: 0.85; }
+
+        /* CONFETTI */
+        .confetti-wrap { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+        .cdot { position: absolute; animation: fall linear forwards; border-radius: 50%; }
+        @keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+
+        /* SHARED BTN */
+        .primary-btn { width: 100%; background: var(--red); color: white; border: none; padding: 14px; border-radius: 12px; font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 800; text-transform: uppercase; cursor: pointer; text-decoration: none; text-align: center; display: block; transition: all 0.15s; margin-bottom: 10px; }
+        .primary-btn:active { opacity: 0.84; transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<div class="confetti-wrap" id="confetti"></div>
+
+<!-- ── VERIFIED SCREEN (when personal QR is scanned by staff) ── -->
+<div class="screen" id="screen-verified">
+    <div class="verified-wrap">
+        <div class="verified-icon">✅</div>
+        <div class="verified-label">Verified Member</div>
+        <div class="verified-name" id="vName"></div>
+        <div class="verified-sub">Welcome back to Place D'Alie!<br>Your details have been confirmed.</div>
+        <div class="verified-card">
+            <div class="v-avatar" id="vAvatar"></div>
+            <div class="v-info">
+                <div class="v-name" id="vNameCard"></div>
+                <div class="v-phone" id="vPhone"></div>
+            </div>
+        </div>
+        <a href="special.html" class="primary-btn">🔥 View Today's Specials</a>
+        <button class="back-btn" onclick="location.href='register.html'">Register New Person</button>
+    </div>
+</div>
+
+<!-- ── FORM SCREEN ── -->
+<div class="screen on" id="screen-form">
+    <div class="brand">Place <em>D'Alie</em></div>
+    <div class="welcome-icon">👋</div>
+    <div class="form-title">Join the Family</div>
+    <div class="form-sub">Register your details to get exclusive deals and your personal member QR card.</div>
+
+    <div class="form-card">
+        <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="regName" placeholder="e.g. Chanda Mwale" autocomplete="name">
+        </div>
+        <div class="field">
+            <label>Phone / WhatsApp</label>
+            <input type="tel" id="regPhone" placeholder="e.g. 0977 123 456" inputmode="tel" autocomplete="tel">
+        </div>
+        <button class="reg-btn" id="regBtn" onclick="register()">✅ &nbsp;Register &amp; Get My QR Card</button>
+        <div class="privacy"><em>🔒 Private</em> — only seen by our staff. Never shared.</div>
+    </div>
+</div>
+
+<!-- ── MEMBER CARD SCREEN ── -->
+<div class="screen" id="screen-card">
+    <div class="brand">Place <em>D'Alie</em></div>
+
+    <div class="member-card" id="memberCard">
+        <div class="mc-brand">Place <em>D'Alie</em></div>
+        <div class="mc-tag">Member Card</div>
+        <div class="mc-name" id="mcName">YOUR NAME</div>
+        <div class="mc-phone" id="mcPhone">0977 000 000</div>
+        <div class="mc-qr">
+            <div class="mc-qr-inner" id="qrTarget"></div>
+        </div>
+        <div class="mc-footer">Show this card at the counter — Place D'Alie</div>
+    </div>
+
+    <div class="save-hint">📸 <em>Screenshot this card</em> to save it on your phone</div>
+    <a href="special.html" class="specials-btn">🔥 &nbsp;View Today's Specials</a>
+    <button class="back-btn" onclick="registerAnother()">Register Another Person</button>
+</div>
+
+<script>
+    const COLORS = ['#E8341A','#F0B429','#22C55E','#3B82F6','#EC4899','#F0F0F2'];
+
+    // ── CHECK IF THIS IS A MEMBER VERIFICATION SCAN ──
+    window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const vName  = params.get('member');
+        const vPhone = params.get('phone');
+
+        if (vName) {
+            // Show verified screen
+            show('screen-verified');
+            document.getElementById('vName').textContent = vName;
+            document.getElementById('vNameCard').textContent = vName;
+            document.getElementById('vPhone').textContent = vPhone ? '📞 ' + vPhone : '';
+            document.getElementById('vAvatar').textContent = vName.charAt(0).toUpperCase();
+
+            // Log this check-in to admin
+            const guests = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+            const exists = guests.find(g => g.name === vName && g.phone === vPhone);
+            if (!exists) {
+                guests.unshift({ id: Date.now(), name: vName, phone: vPhone || '', timestamp: new Date().toISOString(), status: 'here' });
+                localStorage.setItem('dalie_guests', JSON.stringify(guests));
+            }
+            return;
+        }
+
+        // Normal registration page
+        show('screen-form');
+        setTimeout(() => document.getElementById('regName').focus(), 300);
+    });
+
+    // ── REGISTER ──
+    function register() {
+        const name  = document.getElementById('regName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        let ok = true;
+        if (!name)  { shake('regName');  ok = false; }
+        if (!phone) { shake('regPhone'); ok = false; }
+        if (!ok) return;
+
+        const btn = document.getElementById('regBtn');
+        btn.disabled = true;
+        btn.textContent = 'Registering...';
+
+        setTimeout(() => {
+            // Save to dalie_guests (for admin.html Guests tab)
+            const guests = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+            guests.unshift({ id: Date.now(), name, phone, timestamp: new Date().toISOString(), status: 'here' });
+            localStorage.setItem('dalie_guests', JSON.stringify(guests));
+
+            // Save to guestList (for qrcode.html admin table)
+            const gList = JSON.parse(localStorage.getItem('guestList') || '[]');
+            gList.push({ name, phone, time: new Date().toLocaleTimeString(), date: new Date().toLocaleDateString() });
+            localStorage.setItem('guestList', JSON.stringify(gList));
+
+            // Build member card
+            document.getElementById('mcName').textContent = name.toUpperCase();
+            document.getElementById('mcPhone').textContent = phone;
+
+            // Generate personal QR code that links back here with their info
+            const base = window.location.href.split('?')[0];
+            const memberURL = `${base}?member=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+            document.getElementById('qrTarget').innerHTML = '';
+            new QRCode(document.getElementById('qrTarget'), {
+                text: memberURL,
+                width: 170,
+                height: 170,
+                colorDark: '#111111',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            show('screen-card');
+            confetti();
+        }, 500);
+    }
+
+    function registerAnother() {
+        document.getElementById('regName').value = '';
+        document.getElementById('regPhone').value = '';
+        document.getElementById('regBtn').disabled = false;
+        document.getElementById('regBtn').innerHTML = '✅ &nbsp;Register &amp; Get My QR Card';
+        document.getElementById('qrTarget').innerHTML = '';
+        show('screen-form');
+        setTimeout(() => document.getElementById('regName').focus(), 200);
+    }
+
+    // ── HELPERS ──
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+        document.getElementById(id).classList.add('on');
+        window.scrollTo(0, 0);
+    }
+
+    function shake(id) {
+        const el = document.getElementById(id);
+        el.classList.remove('err');
+        void el.offsetWidth;
+        el.classList.add('err');
+        el.focus();
+        setTimeout(() => el.classList.remove('err'), 500);
+    }
+
+    function confetti() {
+        const wrap = document.getElementById('confetti');
+        wrap.innerHTML = '';
+        for (let i = 0; i < 60; i++) {
+            const d = document.createElement('div');
+            d.className = 'cdot';
+            const size = 6 + Math.random() * 9;
+            d.style.cssText = `
+                left:${Math.random()*100}%;
+                width:${size}px; height:${size}px;
+                background:${COLORS[Math.floor(Math.random()*COLORS.length)]};
+                animation-duration:${1.2+Math.random()*1.8}s;
+                animation-delay:${Math.random()*0.4}s;
+                border-radius:${Math.random()>0.45?'50%':'3px'};
+                opacity:0.92;
+            `;
+            wrap.appendChild(d);
+        }
+        setTimeout(() => wrap.innerHTML = '', 3500);
+    }
+</script>
+</body>
+</html>

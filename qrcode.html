@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guest Dashboard — Place D'Alie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --red: #E8341A;
+            --red-dim: rgba(232,52,26,0.12);
+            --gold: #F0B429;
+            --gold-dim: rgba(240,180,41,0.12);
+            --green: #22C55E;
+            --green-dim: rgba(34,197,94,0.12);
+            --blue: #3B82F6;
+            --bg: #0C0C0E;
+            --surface: #161618;
+            --surface2: #1E1E22;
+            --border: rgba(255,255,255,0.07);
+            --text: #F0F0F2;
+            --muted: #6B6B75;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .tl { display: flex; align-items: center; gap: 10px; }
+        .t-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; }
+        .t-logo em { color: var(--gold); font-style: normal; }
+        .t-tag { background: var(--surface2); color: var(--muted); font-size: 0.6rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 9px; border-radius: 4px; border: 1px solid var(--border); }
+        .tr { display: flex; gap: 8px; align-items: center; }
+        .top-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans'; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .top-btn:active { border-color: var(--gold); color: var(--gold); }
+        .top-btn.danger:active { border-color: var(--red); color: var(--red); }
+
+        /* ── PAGE ── */
+        .page { padding: 16px; max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+        /* ── STATS ── */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        @media(max-width:480px) { .stats { grid-template-columns: repeat(2,1fr); } }
+        .s-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 10px; text-align: center; }
+        .s-val { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+        .s-lbl { font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); }
+        .s-tile.gold .s-val { color: var(--gold); }
+        .s-tile.green .s-val { color: var(--green); }
+        .s-tile.hot .s-val { color: var(--red); }
+
+        /* ── TABS ── */
+        .tabs { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; padding: 4px; gap: 3px; }
+        .tab { flex: 1; padding: 10px 6px; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans'; font-size: 0.75rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.18s; white-space: nowrap; text-align: center; }
+        .tab.on { background: var(--surface2); color: var(--text); }
+
+        /* ── PANELS ── */
+        .panel { display: none; }
+        .panel.on { display: flex; flex-direction: column; gap: 10px; }
+
+        /* ── CARD ── */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+        .c-title { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 800; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+        .c-count { font-family: 'DM Sans'; font-size: 0.72rem; font-weight: 600; color: var(--muted); }
+
+        /* ── FILTER CHIPS ── */
+        .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+        .chip { padding: 5px 12px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans'; font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: 0.18s; }
+        .chip.on { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+        /* ── GUEST ROWS ── */
+        .g-row {
+            background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+            padding: 13px 14px; display: flex; align-items: center; gap: 12px;
+            margin-bottom: 8px; transition: opacity 0.2s;
+        }
+        .g-row.served { opacity: 0.38; }
+        .g-row.here { border-color: rgba(34,197,94,0.25); }
+
+        .g-num { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 800; color: var(--muted); width: 22px; text-align: right; flex-shrink: 0; }
+        .g-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--red-dim); border: 1.5px solid rgba(232,52,26,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--red); flex-shrink: 0; text-transform: uppercase; }
+        .g-avatar.here-av { background: var(--green-dim); border-color: rgba(34,197,94,0.3); color: var(--green); }
+
+        .g-info { flex: 1; min-width: 0; }
+        .g-name { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+        .here-pill { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.2); font-family: 'DM Sans'; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.8px; padding: 2px 7px; border-radius: 99px; text-transform: uppercase; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+        .g-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+        .g-date { font-size: 0.68rem; color: var(--muted); opacity: 0.65; margin-top: 1px; }
+
+        .g-btns { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; min-width: 80px; }
+        .g-btn { padding: 6px 10px; border-radius: 7px; border: none; font-family: 'DM Sans'; font-size: 0.68rem; font-weight: 700; cursor: pointer; transition: 0.14s; text-align: center; text-decoration: none; display: block; white-space: nowrap; }
+        .g-btn.serve  { background: var(--green-dim); color: var(--green); }
+        .g-btn.unserve{ background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+        .g-btn.wa     { background: rgba(37,211,102,0.1); color: #25D366; }
+        .g-btn.del    { border: 1px solid var(--border); background: transparent; color: var(--muted); }
+        .g-btn.del:active { border-color: var(--red); color: var(--red); }
+
+        /* ── QR PANEL ── */
+        .qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+        .qr-card-print {
+            background: white; border-radius: 24px; padding: 32px 28px 26px;
+            text-align: center; max-width: 320px; width: 100%;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 24px 56px rgba(0,0,0,0.4);
+            position: relative; overflow: hidden;
+        }
+        .qr-card-print::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background: linear-gradient(90deg, var(--red), var(--gold)); }
+        .qc-logo { font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: #bbb; margin-bottom: 4px; }
+        .qc-logo em { color: var(--red); font-style: normal; }
+        .qc-title { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: #111; margin-bottom: 4px; }
+        .qc-sub { font-size: 0.78rem; color: #888; margin-bottom: 22px; line-height: 1.5; }
+        .qc-box { display: inline-block; background: white; border: 3px solid #f0f0f0; border-radius: 14px; padding: 12px; margin-bottom: 16px; position: relative; }
+        .qc-box::before { content:''; position:absolute; top:-3px; left:-3px; width:16px; height:16px; border-top:3px solid var(--red); border-left:3px solid var(--red); border-radius:4px 0 0 0; }
+        .qc-box::after  { content:''; position:absolute; bottom:-3px; right:-3px; width:16px; height:16px; border-bottom:3px solid var(--red); border-right:3px solid var(--red); border-radius:0 0 4px 0; }
+        .qc-scan-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #aaa; margin-bottom: 14px; }
+        .qc-url { background: #f5f5f5; border-radius: 99px; padding: 6px 14px; font-size: 0.72rem; color: #888; font-family: monospace; word-break: break-all; margin-bottom: 8px; }
+        .qc-footer { font-size: 0.65rem; color: #ccc; }
+
+        /* URL input */
+        .url-field { width: 100%; }
+        .url-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 7px; display: block; }
+        .url-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: monospace; font-size: 0.85rem; outline: none; transition: border 0.2s; }
+        .url-input:focus { border-color: var(--gold); }
+
+        .action-btns { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 320px; }
+        .a-btn { padding: 14px; border-radius: 12px; border: none; font-family: 'Syne', sans-serif; font-size: 0.88rem; font-weight: 800; letter-spacing: 0.4px; cursor: pointer; transition: 0.15s; text-align: center; }
+        .a-btn.primary  { background: var(--red); color: white; }
+        .a-btn.secondary{ background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: 'DM Sans'; font-size: 0.82rem; font-weight: 600; }
+        .a-btn:active { opacity: 0.82; transform: scale(0.98); }
+
+        .info-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+        .info-box strong { color: var(--text); }
+
+        /* EMPTY */
+        .empty { text-align: center; padding: 40px 16px; color: var(--muted); font-size: 0.85rem; }
+        .empty .ei { font-size: 2.4rem; display: block; margin-bottom: 10px; opacity: 0.28; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 99px; font-size: 0.82rem; font-weight: 600; z-index: 9000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; opacity: 0; white-space: nowrap; }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* PRINT */
+        @media print {
+            body { background: white; }
+            .topbar, .page > .stats, .page > .tabs, #panel-guests, .action-btns, .url-field, .info-box, .qr-wrap > .card { display: none !important; }
+            .panel.on { display: block !important; }
+            .qr-wrap { gap: 0; }
+            .qr-card-print { box-shadow: none; border: 1px solid #eee; margin: 0 auto; }
+        }
+    </style>
+</head>
+<body>
+    <a href=" registerd.html" class="admin">⚙ register</a>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <div class="tl">
+        <div class="t-logo">Place <em>D'Alie</em></div>
+        <div class="t-tag">Guests</div>
+    </div>
+    <div class="tr">
+        <a class="top-btn" href="admin.html">← Dashboard</a>
+        <button class="top-btn danger" onclick="clearAll()">Clear All</button>
+    </div>
+</div>
+
+<div class="page">
+
+    <!-- STATS -->
+    <div class="stats" id="stats"></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab on" id="t-guests" onclick="go('guests',this)">👥 Guest List</button>
+        <button class="tab"    id="t-qr"     onclick="go('qr',this)">📱 QR Code</button>
+    </div>
+
+    <!-- ── GUEST LIST PANEL ── -->
+    <div class="panel on" id="panel-guests">
+        <div class="card">
+            <div class="c-title">
+                <span>Registered Guests</span>
+                <span class="c-count" id="gCount"></span>
+            </div>
+            <div class="chips" id="filterChips">
+                <button class="chip on" onclick="filt('all',this)">All</button>
+                <button class="chip"    onclick="filt('here',this)">🟢 Here Now</button>
+                <button class="chip"    onclick="filt('served',this)">✅ Served</button>
+            </div>
+        </div>
+        <div id="guestList"></div>
+        <button class="a-btn secondary" onclick="clearServed()" style="margin-top:2px">Clear served guests</button>
+    </div>
+
+    <!-- ── QR CODE PANEL ── -->
+    <div class="panel" id="panel-qr">
+        <div class="card">
+            <div class="c-title">Registration Page URL</div>
+            <label class="url-label" for="urlInput">Paste or edit the link to <strong>register.html</strong></label>
+            <input class="url-input" id="urlInput" type="text" oninput="buildQR()">
+        </div>
+
+        <div class="qr-wrap">
+            <!-- Printable QR card -->
+            <div class="qr-card-print" id="printCard">
+                <div class="qc-logo">Place <em>D'Alie</em></div>
+                <div class="qc-title">Scan to Register</div>
+                <div class="qc-sub">Get your member QR card &amp;<br>access exclusive deals</div>
+                <div class="qc-box">
+                    <div id="qrTarget"></div>
+                </div>
+                <div class="qc-scan-label">📱 Point your camera here</div>
+                <div class="qc-url" id="qcUrl">—</div>
+                <div class="qc-footer">Place D'Alie — Members Only</div>
+            </div>
+
+            <div class="action-btns">
+                <button class="a-btn primary" onclick="window.print()">🖨️ &nbsp;Print QR Card</button>
+                <button class="a-btn secondary" onclick="go('guests', document.getElementById('t-guests'))">← Back to Guest List</button>
+            </div>
+
+            <div class="info-box">
+                <strong>Setup:</strong> Put all HTML files in the same folder. The URL auto-fills — just click Print.<br><br>
+                <strong>Flow:</strong> Customer scans → fills name &amp; number → gets personal QR card → appears in your guest list instantly.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    let cf = 'all';
+    let qrInstance = null;
+
+    // Auto-detect register.html URL
+    const autoURL = window.location.href.replace(/[^/]*$/, 'register.html').split('?')[0];
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('urlInput').value = autoURL;
+        buildQR();
+        loadAll();
+        setInterval(loadAll, 5000);
+
+        // Listen for new registrations from same browser
+        window.addEventListener('storage', e => {
+            if (e.key === 'dalie_guests' || e.key === 'guestList') loadAll();
+        });
+    });
+
+    // ── TABS ──
+    function go(name, btn) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+        document.getElementById('panel-' + name).classList.add('on');
+        btn.classList.add('on');
+    }
+
+    // ── STATS + GUESTS ──
+    function loadAll() {
+        const guests = getGuests();
+        const hereN  = guests.filter(g => g.status === 'here').length;
+        const todayN = guests.filter(g => isToday(g.timestamp)).length;
+
+        document.getElementById('stats').innerHTML = `
+            <div class="s-tile gold"><div class="s-val">${guests.length}</div><div class="s-lbl">Total Guests</div></div>
+            <div class="s-tile green"><div class="s-val">${hereN}</div><div class="s-lbl">Here Now 🟢</div></div>
+            <div class="s-tile"><div class="s-val">${todayN}</div><div class="s-lbl">Today</div></div>
+            <div class="s-tile"><div class="s-val">${guests.filter(g=>g.status==='served').length}</div><div class="s-lbl">Served ✅</div></div>
+        `;
+
+        loadGuests();
+    }
+
+    function getGuests() {
+        // Merge from both storage keys
+        const a = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+        const b = JSON.parse(localStorage.getItem('guestList') || '[]').map((g,i) => ({
+            id: g.id || ('legacy_' + i),
+            name: g.name,
+            phone: g.phone,
+            timestamp: g.timestamp || (g.date + ' ' + g.time),
+            status: g.status || 'here'
+        }));
+        // Deduplicate by name+phone
+        const seen = new Set(a.map(g => g.name + g.phone));
+        const merged = [...a, ...b.filter(g => !seen.has(g.name + g.phone))];
+        return merged;
+    }
+
+    function isToday(ts) {
+        if (!ts) return false;
+        const d = new Date(ts);
+        const n = new Date();
+        return d.toDateString() === n.toDateString();
+    }
+
+    function filt(f, btn) {
+        cf = f;
+        document.querySelectorAll('#filterChips .chip').forEach(c => c.classList.remove('on'));
+        btn.classList.add('on');
+        loadGuests();
+    }
+
+    function ago(ts) {
+        if (!ts) return '';
+        const d = new Date(ts);
+        if (isNaN(d)) return ts;
+        const s = Math.floor((Date.now() - d) / 1000);
+        if (s < 60)    return s + 's ago';
+        if (s < 3600)  return Math.floor(s/60) + 'm ago';
+        if (s < 86400) return Math.floor(s/3600) + 'h ago';
+        return d.toLocaleDateString();
+    }
+
+    function loadGuests() {
+        let all = getGuests();
+        const total = all.length;
+        if (cf === 'here')    all = all.filter(g => g.status === 'here');
+        if (cf === 'served')  all = all.filter(g => g.status === 'served');
+        document.getElementById('gCount').textContent = total ? total + ' registered' : '';
+
+        const el = document.getElementById('guestList');
+        if (!all.length) {
+            el.innerHTML = `<div class="empty"><span class="ei">👥</span>${cf==='all'?'No guests yet — share the QR code to get started':'No guests in this category'}</div>`;
+            return;
+        }
+
+        el.innerHTML = all.map((g, i) => {
+            const isHere = g.status === 'here';
+            const ph = (g.phone || '').replace(/\s/g, '');
+            const wa = '260' + ph.replace(/^0/, '');
+            const initial = (g.name || '?').charAt(0).toUpperCase();
+            return `
+            <div class="g-row ${isHere ? 'here' : 'served'}">
+                <div class="g-num">${i+1}</div>
+                <div class="g-avatar ${isHere ? 'here-av' : ''}">${initial}</div>
+                <div class="g-info">
+                    <div class="g-name">
+                        ${g.name}
+                        ${isHere ? '<span class="here-pill">Here</span>' : ''}
+                    </div>
+                    <div class="g-meta">📞 ${g.phone || '—'}</div>
+                    <div class="g-date">${ago(g.timestamp)}</div>
+                </div>
+                <div class="g-btns">
+                    <button class="g-btn ${isHere ? 'serve' : 'unserve'}" onclick="toggleServed('${g.id}')">
+                        ${isHere ? '✅ Served' : '↩️ Undo'}
+                    </button>
+                    <a class="g-btn wa" href="https://wa.me/${wa}" target="_blank">💬 WhatsApp</a>
+                    <button class="g-btn del" onclick="delGuest('${g.id}')">Remove</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleServed(id) {
+        let guests = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+        guests = guests.map(g => { if (String(g.id) === String(id)) g.status = g.status === 'here' ? 'served' : 'here'; return g; });
+        localStorage.setItem('dalie_guests', JSON.stringify(guests));
+        loadAll(); toast('✅ Updated');
+    }
+
+    function delGuest(id) {
+        if (!confirm('Remove this guest?')) return;
+        let guests = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+        guests = guests.filter(g => String(g.id) !== String(id));
+        localStorage.setItem('dalie_guests', JSON.stringify(guests));
+        loadAll(); toast('🗑️ Removed');
+    }
+
+    function clearServed() {
+        if (!confirm('Remove all served guests?')) return;
+        let guests = JSON.parse(localStorage.getItem('dalie_guests') || '[]');
+        const n = guests.filter(g => g.status === 'served').length;
+        localStorage.setItem('dalie_guests', JSON.stringify(guests.filter(g => g.status !== 'served')));
+        loadAll(); toast(`🗑️ Cleared ${n} served guest${n!==1?'s':''}`);
+    }
+
+    function clearAll() {
+        if (!confirm('Delete ALL guest data? This cannot be undone.')) return;
+        localStorage.removeItem('dalie_guests');
+        localStorage.removeItem('guestList');
+        loadAll(); toast('🗑️ All guest data cleared');
+    }
+
+    // ── QR CODE ──
+    function buildQR() {
+        const url = document.getElementById('urlInput').value.trim() || autoURL;
+        document.getElementById('qcUrl').textContent = url;
+
+        const target = document.getElementById('qrTarget');
+        target.innerHTML = '';
+        new QRCode(target, {
+            text: url,
+            width: 190,
+            height: 190,
+            colorDark: '#111111',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    // ── TOAST ──
+    function toast(msg) {
+        const el = document.getElementById('toast');
+        el.textContent = msg; el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 2200);
+    }
+</script>
+</body>
+</html>
