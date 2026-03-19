@@ -2,94 +2,450 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin - Place D'Alie</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #C0392B; --dark: #111; --gold: #D4AF37; }
-        body { font-family: 'Nunito', sans-serif; background: #f4f4f4; padding: 20px; }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--dark); color: white; padding: 20px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--red); }
-        .stat-card span { display: block; font-size: 2rem; color: var(--gold); font-family: 'Bebas Neue'; }
-        .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background: var(--red); color: white; border: none; padding: 12px; cursor: pointer; width: 100%; border-radius: 5px; font-family: 'Bebas Neue'; font-size: 1.2rem; transition: 0.2s; }
-        button:hover { opacity: 0.9; }
-        .lock-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-        .promo-item { border-bottom: 1px solid #eee; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .flash-badge { color: var(--gold); font-weight: bold; font-size: 0.7rem; text-transform: uppercase; }
+        :root { --red: #C0392B; --dark: #111; --gold: #D4AF37; --bg: #f0f0f0; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        /* LOCK SCREEN */
+        .lock-screen {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--dark);
+            color: white;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            gap: 16px;
+            padding: 20px;
+        }
+        .lock-screen h1 {
+            font-family: 'Bebas Neue';
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            text-align: center;
+            color: var(--gold);
+        }
+        .lock-screen p {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+        }
+        .lock-screen input[type=password] {
+            width: 180px;
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 8px;
+            background: #1e1e1e;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: white;
+            padding: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .lock-screen input[type=password]:focus {
+            border-color: var(--red);
+        }
+        .lock-btn {
+            width: 180px;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Bebas Neue';
+            font-size: 1.4rem;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        /* TOP BAR */
+        .topbar {
+            background: var(--dark);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar h1 {
+            font-family: 'Bebas Neue';
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+            color: var(--gold);
+        }
+        .logout-btn {
+            background: #2a2a2a;
+            color: #ccc;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-family: 'Nunito';
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* CONTENT */
+        #content { display: none; }
+
+        .page-body {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .stat-card {
+            background: var(--dark);
+            color: white;
+            padding: 14px 8px;
+            border-radius: 10px;
+            text-align: center;
+            border-bottom: 3px solid var(--red);
+        }
+        .stat-card span {
+            display: block;
+            font-size: 1.6rem;
+            color: var(--gold);
+            font-family: 'Bebas Neue';
+            line-height: 1;
+        }
+        .stat-card small {
+            font-size: 0.65rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 6px;
+            border: none;
+            background: transparent;
+            font-family: 'Bebas Neue';
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            color: #888;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: var(--red);
+            border-bottom-color: var(--red);
+            background: #fff8f8;
+        }
+
+        /* PANELS */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        /* BOX */
+        .box {
+            background: white;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .box h2 {
+            font-family: 'Bebas Neue';
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--dark);
+            letter-spacing: 0.5px;
+        }
+
+        /* FORM */
+        .form-group { margin-bottom: 10px; }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        input[type=text],
+        input[type=number],
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.95rem;
+            color: var(--dark);
+            background: #fafafa;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--red); background: white; }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .price-row { display: flex; gap: 10px; }
+        .price-row .form-group { flex: 1; }
+
+        .file-label {
+            display: block;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            color: #999;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            background: #fafafa;
+        }
+        .file-label:hover { border-color: var(--red); color: var(--red); }
+        .file-label span { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+        input[type=file] { display: none; }
+
+        #imgPreview {
+            width: 100%;
+            max-height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: none;
+            margin-top: 8px;
+        }
+
+        .flash-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #fffbea;
+            border: 1.5px solid #f0d060;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .flash-toggle input { width: auto; accent-color: var(--gold); width: 18px; height: 18px; }
+        .flash-toggle span { font-size: 0.85rem; font-weight: 700; color: #a07800; }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: 'Bebas Neue';
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .submit-btn:active { opacity: 0.85; transform: scale(0.98); }
+
+        /* INVENTORY */
+        .promo-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+        .promo-item:last-child { border-bottom: none; }
+        .promo-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #eee;
+        }
+        .promo-info { flex: 1; min-width: 0; }
+        .promo-info b { font-size: 0.9rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .promo-info small { color: #888; font-size: 0.78rem; }
+        .flash-badge { color: var(--gold); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+        .del-btn {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue';
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: 0.2s;
+        }
+        .del-btn:active { background: #ffdddd; color: var(--red); }
+
+        .empty-msg { color: #aaa; text-align: center; padding: 30px 0; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
+    <!-- LOCK SCREEN -->
     <div id="lock" class="lock-screen">
-        <h1 style="font-family:'Bebas Neue'; font-size: 3rem;">Manager PIN Required</h1>
-        <input type="password" id="pin" placeholder="••••" style="width: 150px; text-align: center; font-size: 2rem;">
-        <button onclick="check()" style="width: 150px;">Unlock</button>
+        <h1>Place D'Alie</h1>
+        <p>Manager access required</p>
+        <input type="password" id="pin" placeholder="••••" maxlength="4" inputmode="numeric">
+        <button class="lock-btn" onclick="check()">Unlock</button>
     </div>
 
-    <div id="content" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="font-family:'Bebas Neue'; margin:0;">Business Dashboard</h1>
-            <button onclick="logout()" style="width:100px; background:#333; font-size: 0.9rem;">Logout</button>
+    <!-- MAIN CONTENT -->
+    <div id="content">
+        <div class="topbar">
+            <h1>📋 Dashboard</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
 
-        <div class="stats" id="statsDisplay">
+        <div class="page-body">
+
+            <!-- STATS -->
+            <div class="stats" id="statsDisplay"></div>
+
+            <!-- TABS -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('post')">➕ Post Special</button>
+                <button class="tab-btn" onclick="switchTab('inventory')">📦 Inventory</button>
             </div>
 
-        <div class="container">
-            <div class="box">
-                <h2 style="font-family:'Bebas Neue';">Post New Special</h2>
-                <label>Food Photo:</label>
-                <input type="file" id="img" accept="image/*">
-                <input type="text" id="title" placeholder="Special Name (e.g. T-Bone Steak)">
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="p1" placeholder="Old Price (K)">
-                    <input type="number" id="p2" placeholder="Sale Price (K)">
+            <!-- POST PANEL -->
+            <div class="panel active" id="panel-post">
+                <div class="box">
+                    <h2>New Special</h2>
+
+                    <div class="form-group">
+                        <label>Food Photo</label>
+                        <label class="file-label" id="fileLabel" for="img">
+                            <span>📷</span>Tap to upload photo
+                        </label>
+                        <input type="file" id="img" accept="image/*" onchange="previewImg(this)">
+                        <img id="imgPreview" src="" alt="preview">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Special Name</label>
+                        <input type="text" id="title" placeholder="e.g. T-Bone Steak">
+                    </div>
+
+                    <div class="price-row">
+                        <div class="form-group">
+                            <label>Old Price (K)</label>
+                            <input type="number" id="p1" placeholder="250">
+                        </div>
+                        <div class="form-group">
+                            <label>Sale Price (K)</label>
+                            <input type="number" id="p2" placeholder="180">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="desc" placeholder="Describe the deal..."></textarea>
+                    </div>
+
+                    <label class="flash-toggle">
+                        <input type="checkbox" id="flashToggle">
+                        <span>⚡ Activate Flash Mode (Glow Effect)</span>
+                    </label>
+
+                    <br>
+                    <button class="submit-btn" onclick="save()">🚀 Launch Special</button>
                 </div>
-                <textarea id="desc" placeholder="Describe the deal..."></textarea>
-                <label style="display:flex; align-items:center; gap:10px; margin: 10px 0; font-weight: bold;">
-                    <input type="checkbox" id="flashToggle" style="width:auto;"> Activate Flash Mode (Glow Effect)
-                </label>
-                <button onclick="save()">Launch Special</button>
             </div>
 
-            <div class="box">
-                <h2 style="font-family:'Bebas Neue';">Current Inventory</h2>
-                <div id="list"></div>
+            <!-- INVENTORY PANEL -->
+            <div class="panel" id="panel-inventory">
+                <div class="box">
+                    <h2>Current Inventory</h2>
+                    <div id="list"></div>
+                </div>
             </div>
+
         </div>
     </div>
 
     <script>
-        // --- SECURITY LOGIC ---
+        // --- SECURITY ---
         if(sessionStorage.getItem('isManager')) unlock();
-        
-        function check(){ 
-            if(document.getElementById('pin').value === '1234') {
-                sessionStorage.setItem('isManager', 'true');
+
+        document.getElementById('pin').addEventListener('keydown', e => {
+            if(e.key === 'Enter') check();
+        });
+
+        function check(){
+            if(document.getElementById('pin').value === '1234'){
+                sessionStorage.setItem('isManager','true');
                 unlock();
             } else {
-                alert("Wrong PIN");
+                document.getElementById('pin').style.borderColor = '#C0392B';
+                setTimeout(() => document.getElementById('pin').style.borderColor = '#333', 800);
+                document.getElementById('pin').value = '';
             }
         }
 
-        function unlock(){ 
-            document.getElementById('lock').style.display = 'none'; 
+        function unlock(){
+            document.getElementById('lock').style.display = 'none';
             document.getElementById('content').style.display = 'block';
             load();
         }
 
-        function logout(){ 
-            sessionStorage.removeItem('isManager'); 
-            location.reload(); 
+        function logout(){
+            sessionStorage.removeItem('isManager');
+            location.reload();
         }
 
-        // --- CORE BUSINESS LOGIC ---
+        // --- TABS ---
+        function switchTab(name) {
+            document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // --- IMAGE PREVIEW ---
+        function previewImg(input) {
+            const file = input.files[0];
+            if(!file) return;
+            document.getElementById('fileLabel').textContent = '✅ ' + file.name;
+            const preview = document.getElementById('imgPreview');
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+
+        // --- CORE LOGIC ---
         function save() {
             const file = document.getElementById('img').files[0];
             if(!file) { alert("Please select an image"); return; }
-            
+
             const reader = new FileReader();
             reader.onloadend = () => {
                 const promos = JSON.parse(localStorage.getItem('dalie_promos')) || [];
@@ -112,25 +468,26 @@
             const promos = JSON.parse(localStorage.getItem('dalie_promos')) || [];
             const views = parseInt(localStorage.getItem('dalie_views')) || 0;
             const clicks = parseInt(localStorage.getItem('dalie_clicks')) || 0;
-            const conversion = views > 0 ? ((clicks / views) * 100).toFixed(1) : 0;
+            const conversion = views > 0 ? ((clicks/views)*100).toFixed(1) : 0;
 
-            // Render Stats
             document.getElementById('statsDisplay').innerHTML = `
-                <div class="stat-card"><span>${views}</span>Total Views</div>
-                <div class="stat-card"><span>${clicks}</span>Claim Clicks</div>
-                <div class="stat-card"><span>${conversion}%</span>Interest Rate</div>
+                <div class="stat-card"><span>${views}</span><small>Views</small></div>
+                <div class="stat-card"><span>${clicks}</span><small>Clicks</small></div>
+                <div class="stat-card"><span>${conversion}%</span><small>Interest</small></div>
             `;
 
-            // Render List
-            document.getElementById('list').innerHTML = promos.length ? promos.map(p => `
-                <div class="promo-item">
-                    <div>
-                        <b>${p.title}</b> ${p.flash ? '<span class="flash-badge">⚡ Flash</span>' : ''}<br>
-                        <small>K${p.newPrice} (Sale)</small>
+            document.getElementById('list').innerHTML = promos.length
+                ? promos.map(p => `
+                    <div class="promo-item">
+                        <img class="promo-thumb" src="${p.image}" alt="">
+                        <div class="promo-info">
+                            <b>${p.title}</b>
+                            <small>K${p.newPrice} sale ${p.flash ? '<span class="flash-badge">⚡ Flash</span>' : ''}</small>
+                        </div>
+                        <button class="del-btn" onclick="del(${p.id})">DEL</button>
                     </div>
-                    <button onclick="del(${p.id})" style="width:60px; background:#666; font-size:0.7rem; padding:5px;">DEL</button>
-                </div>
-            `).join('') : "<p>No active deals.</p>";
+                `).join('')
+                : `<p class="empty-msg">No active deals yet.</p>`;
         }
 
         function del(id) {
